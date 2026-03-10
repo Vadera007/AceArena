@@ -20,7 +20,7 @@ function App() {
 
   const audioContextRef = useRef<AudioContext | null>(null)
 
-  const playScoreSound = () => {
+  const playScoreSound = async () => {
     try {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
       if (!AudioCtx) return
@@ -28,6 +28,11 @@ function App() {
         audioContextRef.current = new AudioCtx()
       }
       const ctx = audioContextRef.current
+
+      if (ctx.state === 'suspended') {
+        await ctx.resume()
+      }
+
       const oscillator = ctx.createOscillator()
       const gain = ctx.createGain()
 
@@ -49,7 +54,7 @@ function App() {
   }
 
   const handleIncrement = (team: TeamId) => {
-    playScoreSound()
+    void playScoreSound()
     increment(team)
   }
 
